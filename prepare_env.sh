@@ -1,3 +1,4 @@
+#!/bin/bash
 # This scrip is going to prepare the Ubuntu16.04 environment as a AnsibleMachine
 # Mihai IDU - 2019
 
