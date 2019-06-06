@@ -1,0 +1,26 @@
+---
+- hosts: all
+  remote_user: root
+
+  tasks:
+    - name: get Free Memory
+      shell: df -h --total | grep -ohe 'total .*' | awk '{ print $5 }'
+      changed_when: False
+      register: memory
+    
+    - name: get RAM Total Memory
+      shell: cat /proc/meminfo | grep MemTotal | awk '{print $2 $3}'
+      changed_when: False
+      register: ram_memory
+
+    - name: get CPU Freq
+      shell: cat /proc/cpuinfo | grep 'cpu MHz' | awk '{print $4}'
+      change_when: False
+      register: cpu_freq
+
+    - debug: var={{ item }}
+      with_items:
+        - memory.stdout
+        - ram_memory.stdout
+        - cpu_freq.stdout
+

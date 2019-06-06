@@ -19,7 +19,7 @@ ok: [host] => (item=hostname.stdout) => {
 ok: [host] => (item=uptime.stdout) => {
     "ansible_loop_var": "item", 
     "item": "uptime.stdout", 
-    "uptime.stdout": "32 min"
+    "uptime.stdout": "1:58 3"
 }
 
 PLAY RECAP ************************************************************************************************************************
