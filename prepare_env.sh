@@ -56,32 +56,61 @@ echo "##########################################################################
 #done
 #echo $HOSTNAME
 #####################################################################################################################
-echo " Please, input the user of the targeted host to push the ssh key."
+echo " Please, input the USER of the targeted host to push the ssh key."
 read HOSTUSER
 echo " Please, input the IP address of the targeted host."
 read HOSTIP
-echo " Please, input the hostname of the targeted host."
+echo " Please, input the HOSTNAME of the targeted host."
 read HOSTNAME
-sh-copy-id -i ~/.ssh/id_rsa.pub $HOSTUSER@$HOSTIP
-echo " Configuring the targeted hosts in the Ansible configuration."
-echo "[servers]" >> /etc/ansible/hosts
-echo "$HSOTNAME" >> /etc/ansible/hosts
+ssh-copy-id -i ~/.ssh/id_rsa.pub $HOSTUSER@$HOSTIP
+echo " Check if it is needed to configure the targeted hosts in the Ansible configuration."
+echo ""
+echo " All the following configuration it will target the configuration of the ANSIBLE TOWER!"
+echo ""
+echo " Please, input the HOST's CATEGORY defined for the ansible tower."
+read HOSTCATEGORY
+
+# Switching to super-user priviledges in order to have access to push the configuration
+#sudo su
+#if [[ 'grep '$HOSTCATEGORY' /etc/ansible/hosts' ]];then
+if grep -q $HOSTCATEGORY "/etc/ansible/hosts";then
+        # Some Actions
+        echo " The host's < $HOSTCATEGORY > category is already defined!"
+else 
+	echo " The host's category is not defined. This will be define as you requested!"
+	sudo su -c "echo "[$HOSTCATEGORY]" >> /etc/ansible/hosts"
+fi
+
+if grep -q $HOSTNAME "/etc/ansible/hosts";then
+	# Some Actions are needed-to be added here
+	echo " The host's name: $HOSTNAME is already defined!"
+else
+	echo " The host's name: $HOSTNAME is not defined. This will be defines as you requested!"
+	sudo su -c "echo "$HOSTNAME" >> /etc/ansible/hosts"
+fi
 
 echo " Creating the host variables files for configuration."
 if [ ! -d /etc/ansible/host_vars ]; then
 	# Control will enter here if host environment directory doesnt exists.
-	sudo mkdir /etc/ansible/host_vars
+	sudo su -c "mkdir /etc/ansible/host_vars"
 	echo " The Host Variable has been created!"
-fi 
-echo " The Host Variable exists! It wont be recreated!"
+else 
+	echo " The Host Variable exists! It wont be recreated!"
+fi
+
 echo " Now we are checking if the targeted host configuration file exists.If it exists, just update the information"
 if [ ! -d /etc/ansible/hosts_vars/$HOSTNAME ]; then
 	# Control will enter here if the host configuration file doesnt exists.
-	echo "ansible_ssh_host: $HOSTIP" >> /etc/ansible/host_vars/$HOSTNAME
-	echo "ansible_ssh_port: 22" >> /etc/ansible/host_vars/$HOSTNAME
-	echo "ansible_ssh_user: $HOSTUSER" >> /etc/ansible/host_vars/$HOSTNAME
+	sudo su -c "echo "ansible_ssh_host: $HOSTIP" >> /etc/ansible/host_vars/$HOSTNAME"
+	sudo su -c "echo "ansible_ssh_port: 22" >> /etc/ansible/host_vars/$HOSTNAME"
+	sudo su -c "echo "ansible_ssh_user: $HOSTUSER" >> /etc/ansible/host_vars/$HOSTNAME"
+else
+	echo " The Host Configuration file exists! It wont be recreated!"
 fi
 ####################################################################################################################
+# Exiting the super-user priviledges 
+#exit
+#
 echo " "
 echo " Testing the Ansible config"
 ansible -m ping all
@@ -99,10 +128,11 @@ echo " Running the checks..."
 echo " Please wait! The results log will be flushed in the $LOG_DIR!"
 ansible-playbook $UPTIME_DIR/uptime.yaml > $LOG_DIR/uptime.log 2>&1
 #ansible-playbook $MEMORY_DIR/resource_check.yaml > $LOG_DIR/memory_check.log 2>&1
+ansible all -m gather_facts --tree /tmp/facts > $LOG_DIR/facts.log 2>&1
 
 echo " Flushing the UPTIME log results!"
 sleep 2s
-cat $LOG_DIR/uptime.log
+#cat $LOG_DIR/uptime.log
 echo ""
 #echo " Flushing the Available Percentage of MEMORY log results!"
 #sleep 2s
