@@ -13,8 +13,8 @@ sudo apt-get upgrade -y
 echo ""
 sleep 2s
 echo " It will prepare the python environment and python-pip to the latest version!"
-sudo apt-get install python3 -y
-sudo apt-get install python-pip
+./checkpackage.sh python3
+./checkpackage.sh python-pip
 echo " Upgrade the Python-pip to the latest version in order to install all the pip libraries needed for Ansible!"
 pip install --upgrade pip
 pip install ansible
@@ -35,8 +35,7 @@ echo " Installing the ansible software solution!"
 sudo apt-add-repository ppa:ansible/ansible -y
 sudo apt-get update -y
 sudo apt-get upgrade -y
-sudo apt-get install ansible -y
-sudo apt-get install python-pip -y
+./checkpackage.sh ansible 
 echo " The Ansible tower it has been installed!"
 echo "###############################################################################################################"
 ####################################################################################################################

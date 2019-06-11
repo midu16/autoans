@@ -13,7 +13,7 @@ At the final of the configuration of the Ansible Tower the connection with the t
 - auth-log check
 
 ## Finished development
-- TBD
+- added the check of the uptime of the target machine(s)
 - TBD
 - TBD
 - TBD
