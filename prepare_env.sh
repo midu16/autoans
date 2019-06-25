@@ -106,6 +106,15 @@ if [ ! -d /etc/ansible/hosts_vars/$HOSTNAME ]; then
 	sudo su -c "echo "ansible_ssh_user: $HOSTUSER" >> /etc/ansible/host_vars/$HOSTNAME"
 else
 	echo " The Host Configuration file exists! It wont be recreated!"
+	# Update the informations on the existed files.
+	# this commands delete the existing information
+#	sudo sed -i '/ansible_ssh_host:/d' /etc/ansible/host_vars/$HOSTNAME
+#	sudo sed -i '/ansible_ssh_port:/d' /etc/ansible/host_vars/$HOSTNAME
+#	sudo sed -i '/ansible_ssh_user:/d' /etc/ansible/host_vars/$HOSTNAME
+	# this commands update the informations
+#	sudo su -c "echo "ansible_ssh_host: $HOSTIP" >> /etc/ansible/host_vars/$HOSTNAME"
+#	sudo su -c "echo "ansible_ssh_port: 22" >> /etc/ansible/host_vars/$HOSTNAME"
+#       sudo su -c "echo "ansible_ssh_user: $HOSTUSER" >> /etc/ansible/host_vars/$HOSTNAME"
 fi
 ####################################################################################################################
 # Exiting the super-user priviledges 
@@ -139,8 +148,6 @@ echo ""
 #cat $LOG_DIR/memory_check.log
 
 echo "###################################################################################"
-
-
 echo "EOF"
-echo "###############################################################################################################"
+echo "###################################################################################"
 
